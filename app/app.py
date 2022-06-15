@@ -21,6 +21,7 @@ import base64
 import ast
 from threading import Thread
 import log_collector
+import logging
 
 
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
@@ -1008,18 +1009,21 @@ def num_of_attacks():
 
 if __name__ == "__main__":
     try:
-        http_server = WSGIServer(('0.0.0.0', 5000), app)
+        http_server = WSGIServer(('0.0.0.0', int(WEB_SERVER_PORT)), app)
         # run hpfeeds broker, this will also create the sqlite.db file in the current dir if it doesn't exist
-        # hpfeeds_broker_process = subprocess.Popen(["hpfeeds-broker", "-e", "tcp:port=10000"], stdout=subprocess.PIPE, cwd=basedir)
+        hpfeeds_broker_process = subprocess.Popen(["hpfeeds-broker", "-e", "tcp:port=10000"], stdout=subprocess.PIPE, cwd=basedir)
         sleep(5)
-        # log_collector_thread = Thread(target=log_collector.main, args=())
+        log_collector_thread = Thread(target=log_collector.main, args=())
         app.debug = True
-        # log_collector_thread.start()
-        print('Waiting for requests.. ')
+        log_collector_thread.start()
+        logging.basicConfig(format='[+] %(levelname)s:%(message)s', level=logging.DEBUG)
+        logging.info(f'Flask Server Started on port {WEB_SERVER_PORT}')
+        logging.info(f'Visit http://localhost:{WEB_SERVER_PORT}')
+        # print(f"Flask Server running on port {WEB_SERVER_PORT}")
         http_server.serve_forever()
         
 
     except:
-        # hpfeeds_broker_process.terminate()
+        hpfeeds_broker_process.terminate()
         print("Exception")
 

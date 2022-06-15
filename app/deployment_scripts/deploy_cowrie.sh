@@ -31,7 +31,8 @@ apt-get -y install python-dev git openssh-server supervisor authbind openssl pyt
 
 # pip install -U supervisor
 pip install configparser
-pip install requests
+pip install requests==2.7.0
+
  
 /etc/init.d/supervisor start || true
 
